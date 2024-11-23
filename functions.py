@@ -4,7 +4,8 @@ from tkinter import simpledialog
 import pandas as pd
 import tkinter as tk
 from tkinter import filedialog, messagebox
-import openpyxl
+
+# noqa: F401 (imported in main script)
 
 def extract_urls_excel(file_path, column_name):
 
@@ -41,3 +42,42 @@ def get_window_input():
         messagebox.showwarning("Error", "File not selected.")
         root.destroy()
         return None, None
+    
+
+async def zip_input(zip_xpath, popup_menu_xpath, input_zip_code_xpath, zip_code, apply_bnt_xpath, driver):
+    """
+    Inputs the zip code into the location popup menu and applies the changes.
+
+    Args:
+        zip_xpath (str): The XPath of the "Update Location" button
+        popup_menu_xpath (str): The XPath of the popup menu
+        input_zip_code_xpath (str): The XPath of the input box for the zip code
+        zip_code (str): The zip code to input
+        apply_btn_xpath (str): The XPath of the "Apply" button
+        driver: The selenium-driverless WebDriver
+
+    Returns:
+        bool: True if successful, False if any error occurred
+    """
+    try:
+        # Click the "Update Location" button
+        update_location = await driver.find_element(By.XPATH, zip_xpath)
+        await update_location.click()
+
+        # Get the popup menu element
+        popup_menu = await driver.find_element(By.XPATH, popup_menu_xpath)
+   
+        # Input the zip code and click the "Apply" button
+        input_zip_code = await driver.find_element(By.XPATH, input_zip_code_xpath)
+        await input_zip_code.click()
+        await input_zip_code.send_keys(zip_code)
+    
+        # Get the "Apply" button element
+        apply_button = await driver.find_element(By.XPATH, apply_bnt_xpath)
+        # Click the "Apply" button
+        await apply_button.click()
+
+        return True
+    except NoSuchElementException as e:
+        print(f"Element not found: {e}")
+        return False
