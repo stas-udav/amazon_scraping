@@ -4,21 +4,32 @@ from tkinter import simpledialog
 import pandas as pd
 import tkinter as tk
 from tkinter import filedialog, messagebox
+  
 
 # noqa: F401 (imported in main script)
 
-def extract_urls_excel(file_path, column_name):
+def extract_data_excel(file_path, column_index, filter_func=None):
+    """ Extracts data from an Excel file.
+    Arguments: file_path (str) ( resiving from get_window_input): 
+    The path to the Excel file to extract data from. column_name (str or numbers): 
+    The name of the column to retrieve data from. 
+    filter_func (callable, optional): An optional function to filter the extracted data.
+    Returns: The extracted data from the specified column.
+    Notes: This function provides a universal interface for extracting data from Excel files.
+    Example for urls: urls = extract_data_excel(file_path, column_name, 
+    filter_func=lambda x: isinstance(x, str) and x.startswith('https://'))    """
 
     # Read the Excel file into a DataFrame
     df = pd.read_excel(file_path)
-    print("Доступные столбцы:", df.columns.tolist())
+    print("Available columns:", df.columns.tolist())
 
-    # Extract the URLs from the specified column
-    urls = df.iloc[:, 0].tolist()
+    # Extract the data from the specified column
+    data = df.iloc[:, column_index].tolist()
 
-    urls = [url for url in urls if isinstance(url, str) and url.startswith("https://")]
-
-    return urls
+    # function to filter the extracted data
+    if filter_func:
+        data = [item for item in data if filter_func(item)]    
+    return data
 
 def get_window_input():
     root = tk.Tk()
@@ -29,12 +40,12 @@ def get_window_input():
     )
     if file_path:
         while True:
-            column_name = simpledialog.askstring(
-                "Column Name",
-                "Enter the name of the column containing the URLs:"
+            column_index = simpledialog.askinteger(
+                "Column Index",
+                "Enter the column number (0 for first column):"
             )
-            if column_name:
-                return file_path, column_name
+            if column_index is not None:
+                return file_path, column_index
             else:
                 messagebox.showwarning("Error", "Column name not provided.")
                 root.destroy()
