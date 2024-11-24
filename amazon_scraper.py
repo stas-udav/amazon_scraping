@@ -15,7 +15,7 @@ time.sleep(0.5)
 
 file_path_zip, column_index_zip = func.get_window_input()
 zip_codes = func.extract_data_excel(file_path_zip, column_index_zip,
-    filter_func=lambda zip: isinstance(zip, str))
+    filter_func=lambda zip: isinstance(zip, (str, int, float)))
 print(zip_codes)
 
 async def main():          
@@ -26,8 +26,9 @@ async def main():
             await driver.get("https://www.amazon.com/",wait_load = True)
 
             # zip_code = zip using directly from for loop
-            await func.zip_input(config.zip_xpath, config.popup_menu_xpath, 
-                                    config.input_zip_code_xpath, zip, config.apply_bnt_xpath, driver)
+            await func.zip_input(config.zip_code_xpath, config.popup_menu_xpath, 
+                                    config.input_zip_code_xpath, zip, config.apply_btn_xpath, driver)
+            # await driver.find.element(By.XPATH, config.zip_code_xpath).click()
         for url in urls: 
             async with webdriver.Chrome(options=options) as driver: 
                 await driver.maximize_window()                                    

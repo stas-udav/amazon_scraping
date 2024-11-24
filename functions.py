@@ -4,7 +4,9 @@ from tkinter import simpledialog
 import pandas as pd
 import tkinter as tk
 from tkinter import filedialog, messagebox
-  
+from selenium_driverless.types.by import By
+from selenium.common.exceptions import NoSuchElementException
+import asyncio
 
 # noqa: F401 (imported in main script)
 
@@ -72,6 +74,7 @@ async def zip_input(zip_xpath, popup_menu_xpath, input_zip_code_xpath, zip_code,
     """
     try:
         # Click the "Update Location" button
+        await asyncio.sleep(2)
         update_location = await driver.find_element(By.XPATH, zip_xpath)
         await update_location.click()
 
