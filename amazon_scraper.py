@@ -1,9 +1,4 @@
-import os
-from bs4 import BeautifulSoup
-from numpy import extract
-from playwright.sync_api import sync_playwright
 import time
-import requests
 from selenium_driverless import webdriver
 from selenium_driverless.types.by import By
 from selenium.common.exceptions import NoSuchElementException
@@ -23,16 +18,20 @@ zip_codes = func.extract_data_excel(file_path_zip, column_index_zip,
     filter_func=lambda zip: isinstance(zip, str))
 print(zip_codes)
 
-async def main():
+async def main():          
+    for zip in zip_codes:
         options = webdriver.ChromeOptions()    
         async with webdriver.Chrome(options=options) as driver: 
-            await driver.maximize_window()   
+            await driver.maximize_window() 
+            await driver.get("https://www.amazon.com/",wait_load = True)
 
-            for zip in zip_codes:
-                zip_code = zip
-                await func.zip_input(config.zip_xpath, config.popup_menu_xpath, config.input_zip_code_xpath, zip_code, config.apply_bnt_xpath, driver)
-                for url in urls:                        
-                    await driver.get(url,wait_load = True)                      
-                    await asyncio.sleep(15)
+            # zip_code = zip using directly from for loop
+            await func.zip_input(config.zip_xpath, config.popup_menu_xpath, 
+                                    config.input_zip_code_xpath, zip, config.apply_bnt_xpath, driver)
+        for url in urls: 
+            async with webdriver.Chrome(options=options) as driver: 
+                await driver.maximize_window()                                    
+                await driver.get(url,wait_load = True)                      
+                await asyncio.sleep(15)
 asyncio.run(main())
 
