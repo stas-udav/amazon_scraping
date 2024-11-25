@@ -1,6 +1,7 @@
 from email import message
 from math import e
 from tkinter import simpledialog
+from turtle import up
 import pandas as pd
 import tkinter as tk
 from tkinter import filedialog, messagebox
@@ -74,13 +75,18 @@ async def zip_input(zip_xpath, popup_menu_xpath, input_zip_code_xpath, zip_code,
     """
     try:
         # Click the "Update Location" button
-        await asyncio.sleep(2)
+        await asyncio.sleep(2)        
+        print("Update Location")
         update_location = await driver.find_element(By.XPATH, zip_xpath)
+        print("test")
+        print(await update_location.text)
         await update_location.click()
 
         # Get the popup menu element
         popup_menu = await driver.find_element(By.XPATH, popup_menu_xpath)
-   
+        await popup_menu.click()
+        await.asyncio.sleep(1)
+
         # Input the zip code and click the "Apply" button
         input_zip_code = await driver.find_element(By.XPATH, input_zip_code_xpath)
         await input_zip_code.click()
