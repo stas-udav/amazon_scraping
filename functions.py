@@ -85,12 +85,13 @@ async def zip_input(zip_xpath, popup_menu_xpath, input_zip_code_xpath, zip_code,
         # Get the popup menu element
         popup_menu = await driver.find_element(By.XPATH, popup_menu_xpath)
         await popup_menu.click()
-        await.asyncio.sleep(1)
+        await asyncio.sleep(1)
 
         # Input the zip code and click the "Apply" button
         input_zip_code = await driver.find_element(By.XPATH, input_zip_code_xpath)
         await input_zip_code.click()
-        await input_zip_code.send_keys(zip_code)
+        zip_code_str = str(int(zip_code))
+        await input_zip_code.send_keys(zip_code_str)
     
         # Get the "Apply" button element
         apply_button = await driver.find_element(By.XPATH, apply_bnt_xpath)
