@@ -9,30 +9,6 @@ from selenium_driverless.types.by import By
 from selenium.common.exceptions import NoSuchElementException
 import asyncio
 
-# noqa: F401 (imported in main script)
-
-def extract_data_excel(file_path, column_index, filter_func=None):
-    """ Extracts data from an Excel file.
-    Arguments: file_path (str) ( resiving from get_window_input): 
-    The path to the Excel file to extract data from. column_name (str or numbers): 
-    The name of the column to retrieve data from. 
-    filter_func (callable, optional): An optional function to filter the extracted data.
-    Returns: The extracted data from the specified column.
-    Notes: This function provides a universal interface for extracting data from Excel files.
-    Example for urls: urls = extract_data_excel(file_path, column_name, 
-    filter_func=lambda x: isinstance(x, str) and x.startswith('https://'))    """
-
-    # Read the Excel file into a DataFrame
-    df = pd.read_excel(file_path)
-    print("Available columns:", df.columns.tolist())
-
-    # Extract the data from the specified column
-    data = df.iloc[:, column_index].tolist()
-
-    # function to filter the extracted data
-    if filter_func:
-        data = [item for item in data if filter_func(item)]    
-    return data
 
 def get_window_input():
     root = tk.Tk()
@@ -65,14 +41,14 @@ def load_exel_data(file_path, column_indexes):
     urls = df.iloc[:, column_indexes[1]].tolist()
     zip_codes = df.iloc[:, column_indexes[2]].tolist()
 
-    print(items_id)
-    print(urls)
-    print(zip_codes)
+    # print(items_id)
+    # print(urls)
+    # print(zip_codes)
     return items_id, urls, zip_codes
 
 
 
-async def zip_input(zip_xpath, popup_menu_xpath, input_zip_code_xpath, zip_code, apply_bnt_xpath, driver):
+async def zip_input(zip_xpath, popup_menu_xpath, input_zip_code_xpath, zip_code, apply_bnt_xpath, done_btn_xpath, driver):
     """
     Inputs the zip code into the location popup menu and applies the changes.
 
@@ -92,7 +68,7 @@ async def zip_input(zip_xpath, popup_menu_xpath, input_zip_code_xpath, zip_code,
         await asyncio.sleep(2)        
         print("Update Location")
         update_location = await driver.find_element(By.XPATH, zip_xpath)
-        print("test")
+        print("Updated")
         print(await update_location.text)
         await update_location.click()
 
@@ -111,8 +87,11 @@ async def zip_input(zip_xpath, popup_menu_xpath, input_zip_code_xpath, zip_code,
         apply_button = await driver.find_element(By.XPATH, apply_bnt_xpath)
         # Click the "Apply" button
         await apply_button.click()
-
+        await asyncio.sleep(2)
+        done = await driver.find_element(By.XPATH, done_btn_xpath)
+        await done.click()
         return True
     except NoSuchElementException as e:
         print(f"Element not found: {e}")
         return False
+
