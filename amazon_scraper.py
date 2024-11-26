@@ -8,15 +8,17 @@ from asynciolimiter import Limiter
 import functions as func
 import config as config
 
-file_path, column_index = func.get_window_input()
-urls = func.extract_data_excel(file_path, column_index,
-    filter_func=lambda url: isinstance(url, str) and url.startswith("https://"))
-time.sleep(0.5)
+# file_path, column_index = func.get_window_input()
+# urls = func.extract_data_excel(file_path, column_index,
+#     filter_func=lambda url: isinstance(url, str) and url.startswith("https://"))
+# time.sleep(0.5)
 
-file_path_zip, column_index_zip = func.get_window_input()
-zip_codes = func.extract_data_excel(file_path_zip, column_index_zip,
-    filter_func=lambda zip: isinstance(zip, (str, int, float)))
-print(zip_codes)
+# file_path_zip, column_index_zip = func.get_window_input()
+# zip_codes = func.extract_data_excel(file_path_zip, column_index_zip,
+#     filter_func=lambda zip: isinstance(zip, (str, int, float)))
+# print(zip_codes)
+
+items_id, urls, zip_codes= func.load_exel_data(config.file_path, config.column_index)
 
 async def main():          
     for zip in zip_codes:

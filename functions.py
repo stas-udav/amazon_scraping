@@ -57,6 +57,20 @@ def get_window_input():
         root.destroy()
         return None, None
     
+# extract data from excel file with precondition(urls, zips, ids)
+def load_exel_data(file_path, column_indexes):
+    df = pd.read_excel(file_path)
+
+    items_id = df.iloc[:, column_indexes[0]].tolist()
+    urls = df.iloc[:, column_indexes[1]].tolist()
+    zip_codes = df.iloc[:, column_indexes[2]].tolist()
+
+    print(items_id)
+    print(urls)
+    print(zip_codes)
+    return items_id, urls, zip_codes
+
+
 
 async def zip_input(zip_xpath, popup_menu_xpath, input_zip_code_xpath, zip_code, apply_bnt_xpath, driver):
     """
