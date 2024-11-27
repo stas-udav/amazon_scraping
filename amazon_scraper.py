@@ -8,32 +8,10 @@ from asynciolimiter import Limiter
 import functions as func
 import config as config
 
-# file_path, column_index = func.get_window_input()
-# urls = func.extract_data_excel(file_path, column_index,
-#     filter_func=lambda url: isinstance(url, str) and url.startswith("https://"))
-# time.sleep(0.5)
-
-# file_path_zip, column_index_zip = func.get_window_input()
-# zip_codes = func.extract_data_excel(file_path_zip, column_index_zip,
-#     filter_func=lambda zip: isinstance(zip, (str, int, float)))
-# print(zip_codes)
 
 items_id, urls, zip_codes= func.load_exel_data(config.file_path, config.column_index)
 
-async def main():          
-    # for zip in zip_codes:
-    #     options = webdriver.ChromeOptions()    
-    #     async with webdriver.Chrome(options=options) as driver: 
-    #         try:
-    #             await driver.maximize_window() 
-    #             await driver.get("https://www.amazon.com/",wait_load = True)
-
-    #             # zip_code = zip using directly from for loop
-    #             await func.zip_input(config.zip_code_xpath, config.popup_menu_xpath, 
-    #                                     config.input_zip_code_xpath, zip, config.apply_btn_xpath, driver)
-    #         # await driver.find.element(By.XPATH, config.zip_code_xpath).click()
-    #         except NoSuchElementException: 
-    #             print("Page not loaded, try again")
+async def main():      
         for url, zip_code in zip(urls, zip_codes): 
             
             options = webdriver.ChromeOptions() 
@@ -65,6 +43,8 @@ async def main():
                     await asyncio.sleep(1)
                     delivery_date = await driver.find_element(By.XPATH, config.delivery_date_xpath)
                     print(await delivery_date.text)
+                    func.extract_date_from_text(await delivery_date.text)
+                    func.today_date()
                     drop_selected_size = await driver.find_element(By.XPATH, f'//span[@class="a-dropdown-container"]//span[contains(normalize-space(text()), "{text_size}")]')
                     await drop_selected_size.click()
                     # await asyncio.sleep(0.5)

@@ -1,6 +1,7 @@
 from email import message
 from math import e
 from tkinter import simpledialog
+from traceback import print_tb
 from turtle import up
 import pandas as pd
 import tkinter as tk
@@ -8,6 +9,8 @@ from tkinter import filedialog, messagebox
 from selenium_driverless.types.by import By
 from selenium.common.exceptions import NoSuchElementException
 import asyncio
+import re
+from datetime import date, datetime
 
 
 def get_window_input():
@@ -95,3 +98,21 @@ async def zip_input(zip_xpath, popup_menu_xpath, input_zip_code_xpath, zip_code,
         print(f"Element not found: {e}")
         return False
 
+def extract_date_from_text(text):
+    match = re.search(r'(\w+ \d+)', text)
+    if match:
+        try:
+            date_str = match.group(1)
+            year = date.today().year
+            date_obj = datetime.strptime(date_str, '%B %d')
+            date_obj = date_obj.date()
+            date_obj = date_obj.replace(year=year)
+            print(date_obj)
+            return date_obj
+        except ValueError:
+            print(" date not found or invalid format")
+            return None
+
+def today_date():
+    print (date.today())
+    return date.today()       
