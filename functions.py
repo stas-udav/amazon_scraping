@@ -116,3 +116,48 @@ def extract_date_from_text(text):
 def today_date():
     print (date.today())
     return date.today()       
+
+def save_data_to_file(item_id, url, zip_code, size, delivery_date, current_data, days_to_delivery):
+    try:
+        df = pd.read_csv('output.csv')
+    except FileNotFoundError:
+        df = pd.DataFrame()
+    if df.empty:
+        data = pd.DataFrame([{
+            'Item ID': item_id,
+            'URL': url,
+            'Zip Code': zip_code,
+            'Size': size,
+            'Delivery Date': delivery_date,
+            'Current Data': current_data,
+            'Days to Delivery': days_to_delivery
+        }])
+        df = pd.concat([df, data], ignore_index=True)
+    else:
+        maching_row = df[(df['Item ID'] == item_id) & 
+                         (df['URL'] == url) & 
+                         (df['Zip Code'] == zip_code) & 
+                         (df['Size'] == size)]
+        if not maching_row.empty:
+            idx = maching_row.index[0]
+            sufix = 1
+            while sufix in df.columns:
+                sufix += 1            
+            df.loc[idx, 'Delivery Date'] = delivery_date
+            df.loc[idx, 'Current Data'] = current_data
+            df.loc[idx, 'Days to Delivery'] = days_to_delivery
+            
+        else:
+            data = pd.DataFrame([{
+                'Item ID': item_id,
+                'URL': url,
+                'Zip Code': zip_code,
+                'Size': size,
+                'Delivery Date': delivery_date,
+                'Current Data': current_data,
+                'Days to Delivery': days_to_delivery
+            }])   
+            df = pd.concat([df, data], ignore_index=True)
+            print('Added new row')
+    df.to_csv('output.csv', index=False)
+    print("Data saved to output.csv")

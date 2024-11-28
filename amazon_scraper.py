@@ -1,3 +1,4 @@
+from calendar import c
 import time
 from selenium_driverless import webdriver
 from selenium_driverless.types.by import By
@@ -12,7 +13,7 @@ import config as config
 items_id, urls, zip_codes= func.load_exel_data(config.file_path, config.column_index)
 
 async def main():      
-        for url, zip_code in zip(urls, zip_codes): 
+        for item_id, url, zip_code in zip(items_id,urls, zip_codes): 
             
             options = webdriver.ChromeOptions() 
             async with webdriver.Chrome(options=options) as driver: 
@@ -42,9 +43,16 @@ async def main():
                     print("Size selected")
                     await asyncio.sleep(1)
                     delivery_date = await driver.find_element(By.XPATH, config.delivery_date_xpath)
-                    print(await delivery_date.text)
-                    func.extract_date_from_text(await delivery_date.text)
-                    func.today_date()
+                    # print(await delivery_date.text)
+                    delivery_date_text = await delivery_date.text
+                    delivery_date_cleaned = func.extract_date_from_text(await delivery_date.text)
+                    current_date = func.today_date()
+                    try:
+                         days_to_delivery = (func.extract_date_from_text(await delivery_date.text) - func.today_date()).days
+                         print(f"Delivery in {days_to_delivery} days") 
+                    except NoSuchElementException as e:
+                         print(f" {e} date not found or invalid format")
+                    func.save_data_to_file(item_id, url, zip_code, text_size, delivery_date_cleaned, current_date, days_to_delivery)
                     drop_selected_size = await driver.find_element(By.XPATH, f'//span[@class="a-dropdown-container"]//span[contains(normalize-space(text()), "{text_size}")]')
                     await drop_selected_size.click()
                     # await asyncio.sleep(0.5)
