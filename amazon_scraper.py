@@ -1,3 +1,4 @@
+from ast import In
 from calendar import c
 import time
 from selenium_driverless import webdriver
@@ -28,38 +29,47 @@ async def main():
                 print("Zip code inputed")
                 await asyncio.sleep(5)
                 drop_down_size_menu = await driver.find_element(By.XPATH, config.size_dropdown_xpath)
-                await asyncio.sleep(1)
-                print("Size menu opening")
+                await asyncio.sleep(2)
                 # await driver.execute_script("arguments[0].scrollIntoView();", config.size_dropdown_xpath)
                 await drop_down_size_menu.click()
                 await asyncio.sleep(5)
                 print("Size menu opened")
-                sizes = await driver.find_elements(By.XPATH, config.sizes_xpath)
-                for size in sizes:   
-                    text_size = await size.text        
-                    print(text_size)         
-                    await size.click()
-                    await asyncio.sleep(0.5)                    
-                    print("Size selected")
-                    await asyncio.sleep(1)
-                    delivery_date = await driver.find_element(By.XPATH, config.delivery_date_xpath)
-                    # print(await delivery_date.text)
-                    delivery_date_text = await delivery_date.text
-                    delivery_date_cleaned = func.extract_date_from_text(await delivery_date.text)
-                    current_date = func.today_date()
-                    try:
-                         days_to_delivery = (func.extract_date_from_text(await delivery_date.text) - func.today_date()).days
-                         print(f"Delivery in {days_to_delivery} days") 
-                    except NoSuchElementException as e:
-                         print(f" {e} date not found or invalid format")
-                    func.save_data_to_file(item_id, url, zip_code, text_size, delivery_date_cleaned, current_date, days_to_delivery)
-                    drop_selected_size = await driver.find_element(By.XPATH, f'//span[@class="a-dropdown-container"]//span[contains(normalize-space(text()), "{text_size}")]')
-                    await drop_selected_size.click()
-                    # await asyncio.sleep(0.5)
-                    # next_size = sizes[sizes.index(size)+1]
-                    # print(next_size.text)
-                    # await next_size.click()
-                    # print("Next size selected")
-                    # await asyncio.sleep(5)
+                try:
+                    sizes = await driver.find_elements(By.XPATH, config.sizes_xpath)
+                    for i in range(len(sizes)):  
+                         try:
+                              sizes = await driver.find_elements(By.XPATH, config.sizes_xpath)
+                              size = sizes[i] 
+                              text_size = await size.text        
+                              print(text_size)         
+                              await size.click()
+                              await asyncio.sleep(1)                    
+                              print("Size selected")
+                              await asyncio.sleep(0.5)
+                              delivery_date = await driver.find_element(By.XPATH, config.delivery_date_xpath)
+                              # print(await delivery_date.text)
+                              delivery_date_text = await delivery_date.text
+                              delivery_date_cleaned = func.extract_date_from_text(await delivery_date.text)
+                              current_date = func.today_date()
+                              try:
+                                   days_to_delivery = (func.extract_date_from_text(await delivery_date.text) - func.today_date()).days
+                                   print(f"Delivery in {days_to_delivery} days") 
+                              except NoSuchElementException as e:
+                                   print(f" {e} date not found or invalid format")
+                              func.save_data_to_file(item_id, url, zip_code, text_size, delivery_date_cleaned, current_date, days_to_delivery)
+                              await asyncio.sleep(1)
+                              drop_down_size_menu = await driver.find_element(By.XPATH, config.size_dropdown_xpath)
+                              await drop_down_size_menu.click()
+                         except IndexError:
+                              print("Index out of range")
+                              break
+                         except Exception  as e:
+                              print(f" {e} size not found or invalid format")
+                              continue
+                except Exception as e:
+                    print(f"Eror: {e} with url - {url}")
+                    continue
+               
+            
 asyncio.run(main())
 

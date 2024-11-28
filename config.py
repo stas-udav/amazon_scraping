@@ -9,7 +9,8 @@ input_zip_code_xpath = '//input[@autocomplete="postal-code"]'
 apply_btn_xpath = '//span[text()="Apply"]'
 done_zip_code_btn_xpath = '//button[@name="glowDoneButton"]'
 file_path = file_path = os.path.join(os.path.dirname(__file__), "test.xlsx")
-size_dropdown_xpath = '//span[@class="a-dropdown-container"]//span[contains(normalize-space(text()), "Select")]'
+size_dropdown_xpath = '//span[@class="twister-dropdown-highlight transparentTwisterDropdownBorder"]'
 column_index = [0, 1, 2]
 sizes_xpath = '//li[@class="a-dropdown-item dropdownAvailable"]'
 delivery_date_xpath = '//div[@id="mir-layout-DELIVERY_BLOCK-slot-PRIMARY_DELIVERY_MESSAGE_MEDIUM"]'
+footer_xpath = '//div[@class="navFooterLine navFooterLinkLine navFooterPadItemLine navFooterCopyright"]'

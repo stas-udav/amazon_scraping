@@ -140,12 +140,10 @@ def save_data_to_file(item_id, url, zip_code, size, delivery_date, current_data,
                          (df['Size'] == size)]
         if not maching_row.empty:
             idx = maching_row.index[0]
-            sufix = 1
-            while sufix in df.columns:
-                sufix += 1            
-            df.loc[idx, 'Delivery Date'] = delivery_date
-            df.loc[idx, 'Current Data'] = current_data
-            df.loc[idx, 'Days to Delivery'] = days_to_delivery
+            last_column = len(df.columns)      
+            df.loc[idx, f'Delivery Date_{last_column}'] = delivery_date
+            df.loc[idx, f'Current Data_{last_column}'] = current_data
+            df.loc[idx, f'Days to Delivery_{last_column}'] = days_to_delivery
             
         else:
             data = pd.DataFrame([{
