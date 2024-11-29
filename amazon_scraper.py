@@ -12,6 +12,7 @@ import config as config
 
 
 items_id, urls, zip_codes= func.load_exel_data(config.file_path, config.column_index)
+limits = Limiter(1 / 5)
 
 async def main():      
         for item_id, url, zip_code in zip(items_id,urls, zip_codes): 
@@ -20,7 +21,7 @@ async def main():
             async with webdriver.Chrome(options=options) as driver: 
                 await driver.maximize_window()                                    
                 await driver.get(url,wait_load = True)  
-                await asyncio.sleep(1)
+                await asyncio.sleep(2)
                 # zip_code = zip using directly from for loop
                 await func.zip_input(config.zip_code_xpath, config.popup_menu_xpath, 
                                     config.input_zip_code_xpath, zip_code, 
@@ -56,7 +57,7 @@ async def main():
                                    print(f"Delivery in {days_to_delivery} days") 
                               except NoSuchElementException as e:
                                    print(f" {e} date not found or invalid format")
-                              func.save_data_to_file(item_id, url, zip_code, text_size, delivery_date_cleaned, current_date, days_to_delivery)
+                              func.save_data_to_file(item_id, url, zip_code, text_size, delivery_date_cleaned, current_date, days_to_delivery, config.output_file)
                               await asyncio.sleep(1)
                               drop_down_size_menu = await driver.find_element(By.XPATH, config.size_dropdown_xpath)
                               await drop_down_size_menu.click()

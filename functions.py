@@ -13,6 +13,7 @@ import re
 from datetime import date, datetime
 
 
+
 def get_window_input():
     root = tk.Tk()
     root.withdraw()
@@ -117,7 +118,7 @@ def today_date():
     print (date.today())
     return date.today()       
 
-def save_data_to_file(item_id, url, zip_code, size, delivery_date, current_data, days_to_delivery):
+def save_data_to_file(item_id, url, zip_code, size, delivery_date, current_data, days_to_delivery, output_file):
     try:
         df = pd.read_csv('output.csv')
     except FileNotFoundError:
@@ -157,5 +158,5 @@ def save_data_to_file(item_id, url, zip_code, size, delivery_date, current_data,
             }])   
             df = pd.concat([df, data], ignore_index=True)
             print('Added new row')
-    df.to_csv('output.csv', index=False)
+    df.to_csv(output_file, index=False)
     print("Data saved to output.csv")
