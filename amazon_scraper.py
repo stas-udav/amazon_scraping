@@ -1,34 +1,43 @@
-from ast import In
-from calendar import c
-import time
+from types import resolve_bases
 from selenium_driverless import webdriver
 from selenium_driverless.types.by import By
 from selenium.common.exceptions import NoSuchElementException
 import asyncio
-import os
 from asynciolimiter import Limiter
 import functions as func
 import config as config
 
 
-items_id, urls, zip_codes= func.load_exel_data(config.file_path, config.column_index)
+items_id, urls, zip_codes = func.load_exel_data(config.file_path, config.column_index)
 limits = Limiter(1 / 5)
 
 async def main():      
-        for item_id, url, zip_code in zip(items_id,urls, zip_codes): 
+        for item_id, url, zip_code in zip(items_id, urls, zip_codes): 
             
             options = webdriver.ChromeOptions() 
             async with webdriver.Chrome(options=options) as driver: 
                 await driver.maximize_window()                                    
-                await driver.get(url,wait_load = True)  
-                await asyncio.sleep(2)
+                await driver.get(url,wait_load = True)                  
+                await asyncio.sleep(5)
+                try :
+                    capthca = await driver.find_element(By.XPATH, config.captcha_xpath)                    
+                    if capthca:
+                         print("Captcha found")
+                         await func.resolve_captcha(driver, config.captcha_xpath, config.input_captha_field_xpath, config.captcha_continue_bnt_xpath)
+                    else:
+                         print("Captcha not found")
+                except NoSuchElementException:
+                    print("Captcha not found")
+                    continue
+                await asyncio.sleep(3)
+                
                 # zip_code = zip using directly from for loop
                 await func.zip_input(config.zip_code_xpath, config.popup_menu_xpath, 
                                     config.input_zip_code_xpath, zip_code, 
                                     config.apply_btn_xpath, config.done_zip_code_btn_xpath, driver)
                 # await driver.find.element(By.XPATH, config.zip_code_xpath).click()
                 print("Zip code inputed")
-                await asyncio.sleep(5)
+                await asyncio.sleep(7)
                 drop_down_size_menu = await driver.find_element(By.XPATH, config.size_dropdown_xpath)
                 await asyncio.sleep(2)
                 # await driver.execute_script("arguments[0].scrollIntoView();", config.size_dropdown_xpath)
@@ -36,8 +45,8 @@ async def main():
                 await asyncio.sleep(5)
                 print("Size menu opened")
                 try:
-                    sizes = await driver.find_elements(By.XPATH, config.sizes_xpath)
-                    for i in range(len(sizes)):  
+                    sizes = await driver.find_elements(By.XPATH, config.sizes_xpath)                    
+                    for i in range(len(sizes) -1, -1, -1):  
                          try:
                               sizes = await driver.find_elements(By.XPATH, config.sizes_xpath)
                               size = sizes[i] 
@@ -49,7 +58,7 @@ async def main():
                               await asyncio.sleep(0.5)
                               delivery_date = await driver.find_element(By.XPATH, config.delivery_date_xpath)
                               # print(await delivery_date.text)
-                              delivery_date_text = await delivery_date.text
+                              # delivery_date_text = await delivery_date.text
                               delivery_date_cleaned = func.extract_date_from_text(await delivery_date.text)
                               current_date = func.today_date()
                               try:

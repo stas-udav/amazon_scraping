@@ -15,3 +15,6 @@ sizes_xpath = '//li[@class="a-dropdown-item dropdownAvailable"]'
 delivery_date_xpath = '//div[@id="mir-layout-DELIVERY_BLOCK-slot-PRIMARY_DELIVERY_MESSAGE_MEDIUM"]'
 footer_xpath = '//div[@class="navFooterLine navFooterLinkLine navFooterPadItemLine navFooterCopyright"]'
 output_file = os.path.join(os.path.dirname(__file__), 'output.csv')
+captcha_xpath = '//div[@class="a-row a-text-center"]//img'
+input_captha_field_xpath = '//input[@id="captchacharacters"]'
+captcha_continue_bnt_xpath = '//span[@class="a-button-inner"]'

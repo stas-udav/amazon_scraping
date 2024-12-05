@@ -1,3 +1,4 @@
+from calendar import c
 from email import message
 from math import e
 from tkinter import simpledialog
@@ -11,6 +12,7 @@ from selenium.common.exceptions import NoSuchElementException
 import asyncio
 import re
 from datetime import date, datetime
+from amazoncaptcha import AmazonCaptcha
 
 
 
@@ -160,3 +162,22 @@ def save_data_to_file(item_id, url, zip_code, size, delivery_date, current_data,
             print('Added new row')
     df.to_csv(output_file, index=False)
     print("Data saved to output.csv")
+
+
+async def resolve_captcha(driver, captcha_el, captcha_input_field, btn_xpath):
+    # Find the captcha element    
+    captcha_element = await driver.find_element(By.XPATH, captcha_el)    
+    captcha_img = await captcha_element.get_attribute("src")
+    print (captcha_img)
+
+    captcha_text = AmazonCaptcha.fromlink(captcha_img)
+    captcha_value = captcha_text.solve()    
+    print(captcha_value)
+
+    input_field = await driver.find_element(By.XPATH, captcha_input_field)
+    await input_field.send_keys(captcha_value)
+    click_continue_btn = await driver.find_element(By.XPATH, btn_xpath)
+    await click_continue_btn.click()
+    print("Captcha resolved")
+
+
