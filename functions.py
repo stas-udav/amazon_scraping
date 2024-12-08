@@ -1,14 +1,9 @@
-from calendar import c
-from email import message
-from math import e
 from tkinter import simpledialog
-from traceback import print_tb
-from turtle import up
 import pandas as pd
 import tkinter as tk
 from tkinter import filedialog, messagebox
 from selenium_driverless.types.by import By
-from selenium.common.exceptions import NoSuchElementException
+from selenium_driverless.types.webelement import NoSuchElementException
 import asyncio
 import re
 from datetime import date, datetime
@@ -54,7 +49,8 @@ def load_exel_data(file_path, column_indexes):
 
 
 
-async def zip_input(zip_xpath, popup_menu_xpath, input_zip_code_xpath, zip_code, apply_bnt_xpath, done_btn_xpath, driver):
+async def zip_input(zip_xpath, popup_menu_xpath, input_zip_code_xpath, zip_code,
+                    apply_bnt_xpath, done_btn_xpath, driver):
     """
     Inputs the zip code into the location popup menu and applies the changes.
 
@@ -71,7 +67,7 @@ async def zip_input(zip_xpath, popup_menu_xpath, input_zip_code_xpath, zip_code,
     """
     try:
         # Click the "Update Location" button
-        await asyncio.sleep(2)        
+        await asyncio.sleep(5)        
         print("Update Location")
         update_location = await driver.find_element(By.XPATH, zip_xpath)
         print("Updated")
@@ -81,10 +77,17 @@ async def zip_input(zip_xpath, popup_menu_xpath, input_zip_code_xpath, zip_code,
         # Get the popup menu element
         popup_menu = await driver.find_element(By.XPATH, popup_menu_xpath)
         await popup_menu.click()
-        await asyncio.sleep(1)
+        await asyncio.sleep(3)
 
         # Input the zip code and click the "Apply" button
-        input_zip_code = await driver.find_element(By.XPATH, input_zip_code_xpath)
+        try:
+            input_zip_code = await driver.find_element(By.XPATH, input_zip_code_xpath)
+        except NoSuchElementException:
+            print("Input box not found")
+            await driver.refresh()
+            await asyncio.sleep(5)
+            return await zip_input(zip_xpath, popup_menu_xpath, input_zip_code_xpath, zip_code,
+                   apply_bnt_xpath, done_btn_xpath, driver)
         await input_zip_code.click()
         zip_code_str = str(int(zip_code))
         await input_zip_code.send_keys(zip_code_str)
@@ -120,9 +123,10 @@ def today_date():
     print (date.today())
     return date.today()       
 
-def save_data_to_file(item_id, url, zip_code, size, delivery_date, current_data, days_to_delivery, output_file):
+def save_data_to_file(item_id, url, zip_code, size, delivery_date, days_to_delivery, output_file):
+    current_date = today_date()
     try:
-        df = pd.read_csv('output.csv')
+        df = pd.read_csv(output_file)
     except FileNotFoundError:
         df = pd.DataFrame()
     if df.empty:
@@ -132,7 +136,7 @@ def save_data_to_file(item_id, url, zip_code, size, delivery_date, current_data,
             'Zip Code': zip_code,
             'Size': size,
             'Delivery Date': delivery_date,
-            'Current Data': current_data,
+            'Current Data': current_date.strftime('%Y-%m-%d'),
             'Days to Delivery': days_to_delivery
         }])
         df = pd.concat([df, data], ignore_index=True)
@@ -145,7 +149,7 @@ def save_data_to_file(item_id, url, zip_code, size, delivery_date, current_data,
             idx = maching_row.index[0]
             last_column = len(df.columns)      
             df.loc[idx, f'Delivery Date_{last_column}'] = delivery_date
-            df.loc[idx, f'Current Data_{last_column}'] = current_data
+            df.loc[idx, f'Current Data_{last_column}'] = current_date.strftime('%Y-%m-%d')
             df.loc[idx, f'Days to Delivery_{last_column}'] = days_to_delivery
             
         else:
@@ -155,7 +159,7 @@ def save_data_to_file(item_id, url, zip_code, size, delivery_date, current_data,
                 'Zip Code': zip_code,
                 'Size': size,
                 'Delivery Date': delivery_date,
-                'Current Data': current_data,
+                'Current Data': current_date.strftime('%Y-%m-%d'),
                 'Days to Delivery': days_to_delivery
             }])   
             df = pd.concat([df, data], ignore_index=True)

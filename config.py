@@ -12,7 +12,7 @@ file_path = file_path = os.path.join(os.path.dirname(__file__), "URLs for tracki
 size_dropdown_xpath = '//span[@class="twister-dropdown-highlight transparentTwisterDropdownBorder"]'
 column_index = [0, 1, 2]
 sizes_xpath = '//li[@class="a-dropdown-item dropdownAvailable"]'
-delivery_date_xpath = '//div[@id="mir-layout-DELIVERY_BLOCK-slot-PRIMARY_DELIVERY_MESSAGE_MEDIUM"]'
+delivery_date_xpath = '//div[@class="a-spacing-base"]'
 footer_xpath = '//div[@class="navFooterLine navFooterLinkLine navFooterPadItemLine navFooterCopyright"]'
 output_file = os.path.join(os.path.dirname(__file__), 'output.csv')
 captcha_xpath = '//div[@class="a-row a-text-center"]//img'
