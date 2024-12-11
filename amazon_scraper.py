@@ -37,7 +37,11 @@ async def main():
                # await driver.find.element(By.XPATH, config.zip_code_xpath).click()
                print("Zip code inputed")
                await asyncio.sleep(7)
-               drop_down_size_menu = await driver.find_element(By.XPATH, config.size_dropdown_xpath)
+               try:
+                    drop_down_size_menu = await driver.find_element(By.XPATH, config.size_dropdown_xpath)
+               except NoSuchElementException:
+                    print("Size menu not found")
+                    continue
                await asyncio.sleep(2)
                # await driver.execute_script("arguments[0].scrollIntoView();", config.size_dropdown_xpath)
                await drop_down_size_menu.click()
